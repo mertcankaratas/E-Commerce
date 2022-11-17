@@ -1,5 +1,4 @@
 ﻿using ETicaretAPI.Application.Repositories;
-using ETicaretAPI.Domain.Entities;
 using ETicaretAPI.Persistence.Contexts;
 using System;
 using System.Collections.Generic;
@@ -9,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace ETicaretAPI.Persistence.Repositories
 {
-    public class CustomerWriteRepository : WriteRepository<Customer>, ICustomerWriteRepository
+    public class FileWriteRepository : WriteRepository<ETicaretAPI.Domain.Entities.File>, IFileWriteRepository
     {
-        public CustomerWriteRepository(ETicaretAPIDbContext context) : base(context)
+        public FileWriteRepository(ETicaretAPIDbContext context) : base(context)
         {
         }
     }

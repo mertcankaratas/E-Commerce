@@ -1,4 +1,4 @@
-﻿using ETicaretAPI.Domain.Common;
+﻿using ETicaretAPI.Domain.Entities.Common;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

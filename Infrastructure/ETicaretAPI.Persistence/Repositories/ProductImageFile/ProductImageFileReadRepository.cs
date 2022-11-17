@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 
 namespace ETicaretAPI.Persistence.Repositories
 {
-    public class CustomerWriteRepository : WriteRepository<Customer>, ICustomerWriteRepository
+    public class ProductImageFileReadRepository : ReadRepository<ProductImageFile>, IProductImageFileReadRepository
     {
-        public CustomerWriteRepository(ETicaretAPIDbContext context) : base(context)
+        public ProductImageFileReadRepository(ETicaretAPIDbContext context) : base(context)
         {
         }
     }
+
 }
