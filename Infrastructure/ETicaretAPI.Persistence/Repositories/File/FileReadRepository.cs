@@ -1,4 +1,4 @@
-﻿using ETicaretAPI.Application.Repositories.File;
+﻿using ETicaretAPI.Application.Repositories;
 using ETicaretAPI.Domain.Entities;
 using ETicaretAPI.Persistence.Contexts;
 using System;

@@ -15,7 +15,7 @@ namespace ETicaretAPI.Persistence.Contexts
         {
         }
 
-        public DbSet<ProductImageFile> Products { get; set; }
+        public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Domain.Entities.File> Files { get; set; }
