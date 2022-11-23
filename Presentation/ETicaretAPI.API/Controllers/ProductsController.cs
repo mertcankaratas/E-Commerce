@@ -17,7 +17,7 @@ namespace ETicaretAPI.API.Controllers
         private readonly IProductWriteRepository _productWriteRepository;
         private readonly IProductReadRepository _productReadRepository;
         private readonly IWebHostEnvironment _webHostEnvironment;
-       
+
         private readonly IProductImageFileReadRepository _productImageFileReadRepository;
         private readonly IProductImageFileWriteRepository _productImageFileWriteRepository;
         private readonly IFileReadRepository _fileReadRepository;
@@ -75,7 +75,7 @@ namespace ETicaretAPI.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(VM_Create_Product model)
         {
-           await _productWriteRepository.AddAsync(new()
+            await _productWriteRepository.AddAsync(new()
             {
                 Name = model.Name,
                 Price = model.Price,
@@ -106,38 +106,21 @@ namespace ETicaretAPI.API.Controllers
             return Ok();
         }
         [HttpPost("[action]")]
-        public async Task<IActionResult> Upload()
+        public async Task<IActionResult> Upload(string id)
         {
-            var datas = await _storageService.UploadAsync("files", Request.Form.Files);
-            //var datas = await _fileService.UploadAsync("resource/files", Request.Form.Files);
-            await _productImageFileWriteRepository.AddRangeAsync(datas.Select(d => new ProductImageFile()
+
+            List<(string fileName, string pathOrContainerName)> result = await _storageService.UploadAsync("photo-images", Request.Form.Files);
+
+            Product product = await _productReadRepository.GetByIdAsync(id);
+            await _productImageFileWriteRepository.AddRangeAsync(result.Select(r => new ProductImageFile
             {
-                FileName = d.fileName,
-                Path = d.pathOrContainerName,
-                Storage=_storageService.StorageName
+                FileName = r.fileName,
+                Path = r.pathOrContainerName,
+                Storage = _storageService.StorageName,
+                Products= new List<Product>() { product}
             }).ToList());
+
             await _productImageFileWriteRepository.SaveAsync();
-
-            //await _invoiceFileWriteRepository.AddRangeAsync(datas.Select(d => new InvoiceFile
-            //{
-            //    FileName=d.fileName,
-            //    Path =d.path,
-            //    Price = new Random().Next()
-
-            //}).ToList());
-
-            //await _invoiceFileWriteRepository.SaveAsync();
-
-            //await _fileWriteRepository.AddRangeAsync(datas.Select(d => new ETicaretAPI.Domain.Entities.File()
-            //{
-            //    FileName = d.fileName,
-            //    Path = d.path,
-
-            //}).ToList());
-
-            //await _fileWriteRepository.SaveAsync();
-
-
             return Ok();
 
         }
