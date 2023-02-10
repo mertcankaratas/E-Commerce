@@ -27,7 +27,7 @@ namespace ETicaretAPI.Application.Features.Commands.AppUser.FacebookLogin
 
         public async Task<FacebookLoginCommandResponse> Handle(FacebookLoginCommandRequest request, CancellationToken cancellationToken)
         {
-            string accessTokenResponse = await _httpClient.GetStringAsync("");
+            string accessTokenResponse = await _httpClient.GetStringAsync($"");
 
             FacebookAccessTokenDTO facebookAccessTokenResponse = JsonSerializer.Deserialize<FacebookAccessTokenDTO>(accessTokenResponse);
 

@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using ETicaretAPI.Application.Repositories;
 using ETicaretAPI.Persistence.Repositories;
 using ETicaretAPI.Domain.Entities.Identity;
+using ETicaretAPI.Application.Abstraction.Services;
+using ETicaretAPI.Persistence.Services;
 
 namespace ETicaretAPI.Persistence
 {
@@ -39,6 +41,7 @@ namespace ETicaretAPI.Persistence
             services.AddScoped<IProductReadRepository, ProductReadRepository>();
             services.AddScoped<IProductWriteRepository, ProductWriteRepository>();
 
+            services.AddScoped<IUserService, UserService>();
             
 
         }
