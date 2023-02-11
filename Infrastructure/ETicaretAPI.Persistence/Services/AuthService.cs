@@ -31,7 +31,7 @@ namespace ETicaretAPI.Persistence.Services
             _userManager = userManager;
             _tokenHandler = tokenHandler;
         }
-        public async Task<Token> FacebookLoginAsync(string authToken)
+        public async Task<Token> FacebookLoginAsync(string authToken, int accessTokenLifeTime)
         {
             string accessTokenResponse = await _httpClient.GetStringAsync($"https://graph.facebook.com/oauth/access_token?client_id={_configuration["ExternalLoginSettings:Facebook:Client_ID"]}&client_secret={_configuration["ExternalLoginSettings:Facebook:Client_Secret"]}&grant_type=client_credentials");
 
@@ -72,7 +72,7 @@ namespace ETicaretAPI.Persistence.Services
                 {
                     await _userManager.AddLoginAsync(user, info); //AspNetUserLogins
 
-                    Token token = _tokenHandler.CreateAccessToken(5);
+                    Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime);
                     return token;
 
 
@@ -84,7 +84,7 @@ namespace ETicaretAPI.Persistence.Services
 
         }
 
-        public Task<Token> GoogleLoginAsync(string idToken)
+        public Task<Token> GoogleLoginAsync(string idToken, int accessTokenLifeTime)
         {
             throw new NotImplementedException();
         }
