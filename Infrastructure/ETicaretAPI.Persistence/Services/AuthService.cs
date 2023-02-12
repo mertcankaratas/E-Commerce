@@ -2,6 +2,7 @@
 using ETicaretAPI.Application.Abstraction.Token;
 using ETicaretAPI.Application.DTOs;
 using ETicaretAPI.Application.DTOs.Facebook;
+using Google.Apis.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -84,9 +85,48 @@ namespace ETicaretAPI.Persistence.Services
 
         }
 
-        public Task<Token> GoogleLoginAsync(string idToken, int accessTokenLifeTime)
+        public async Task<Token> GoogleLoginAsync(string idToken, int accessTokenLifeTime)
         {
-            throw new NotImplementedException();
+            var settings = new GoogleJsonWebSignature.ValidationSettings()
+            {
+                Audience = new List<string> {_configuration["ExternalLoginSettings:Google:Client_ID"] }
+            };
+
+            var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
+
+            var info = new UserLoginInfo("GOOGLE", payload.Subject, "GOOGLE");
+            Domain.Entities.Identity.AppUser user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+
+            bool result = user != null;
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(payload.Email);
+
+                user = new()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Email = payload.Email,
+                    UserName = payload.Email,
+                    nameSurname = payload.Name
+
+                };
+
+                var identityResult = await _userManager.CreateAsync(user);
+                result = identityResult.Succeeded;
+            }
+
+            if (result)
+            {
+                await _userManager.AddLoginAsync(user, info);
+            }
+            else
+            {
+                throw new Exception("Invalid external authentication.");
+
+            }
+
+            Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime);
+            return token;
         }
 
         public Task LoginAsync()
