@@ -2,6 +2,7 @@
 using ETicaretAPI.Application.Abstraction.Token;
 using ETicaretAPI.Application.DTOs;
 using ETicaretAPI.Application.DTOs.Facebook;
+using ETicaretAPI.Domain.Entities.Identity;
 using Google.Apis.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -32,6 +33,39 @@ namespace ETicaretAPI.Persistence.Services
             _userManager = userManager;
             _tokenHandler = tokenHandler;
         }
+
+        async Task<Token> CreateUserExternalAsync(AppUser user,string email,string name,UserLoginInfo info, int accessTokenLifeTime)
+        {
+            bool result = user != null;
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    user = new()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Email = email,
+                        UserName = email,
+                        nameSurname = name
+                    };
+                    var identityResult = await _userManager.CreateAsync(user);
+                    result = identityResult.Succeeded;
+                }
+            }
+
+            if (result)
+            {
+                await _userManager.AddLoginAsync(user, info); //AspNetUserLogins
+
+                Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime);
+                return token;
+
+            }
+
+            throw new Exception("Invalid external authentication.");
+
+        }
         public async Task<Token> FacebookLoginAsync(string authToken, int accessTokenLifeTime)
         {
             string accessTokenResponse = await _httpClient.GetStringAsync($"https://graph.facebook.com/oauth/access_token?client_id={_configuration["ExternalLoginSettings:Facebook:Client_ID"]}&client_secret={_configuration["ExternalLoginSettings:Facebook:Client_Secret"]}&grant_type=client_credentials");
@@ -42,7 +76,7 @@ namespace ETicaretAPI.Persistence.Services
 
             FacebookUserAcessTokenValidationDTO? validation = JsonSerializer.Deserialize<FacebookUserAcessTokenValidationDTO>(userAccessTokenValidation);
 
-            if (validation?.Data.IsValid !=null)
+            if (validation?.Data.IsValid != null)
             {
                 string userInfoResponse = await _httpClient.GetStringAsync($"https://graph.facebook.com/me?fields=email,name&access_token={authToken}");
 
@@ -51,38 +85,11 @@ namespace ETicaretAPI.Persistence.Services
                 var info = new UserLoginInfo("FACEBOOK", validation.Data.UserId, "FACEBOOK");
                 Domain.Entities.Identity.AppUser user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
 
-                bool result = user != null;
-                if (user == null)
-                {
-                    user = await _userManager.FindByEmailAsync(userInfo?.Email);
-                    if (user == null)
-                    {
-                        user = new()
-                        {
-                            Id = Guid.NewGuid().ToString(),
-                            Email = userInfo?.Email,
-                            UserName = userInfo?.Email,
-                            nameSurname = userInfo?.Name
-                        };
-                        var identityResult = await _userManager.CreateAsync(user);
-                        result = identityResult.Succeeded;
-                    }
-                }
 
-                if (result)
-                {
-                    await _userManager.AddLoginAsync(user, info); //AspNetUserLogins
-
-                    Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime);
-                    return token;
-
-
-
-                }
+                return await CreateUserExternalAsync(user, userInfo.Email, userInfo.Name, info, accessTokenLifeTime);
 
             }
             throw new Exception("Invalid external authentication.");
-
         }
 
         public async Task<Token> GoogleLoginAsync(string idToken, int accessTokenLifeTime)
@@ -97,36 +104,7 @@ namespace ETicaretAPI.Persistence.Services
             var info = new UserLoginInfo("GOOGLE", payload.Subject, "GOOGLE");
             Domain.Entities.Identity.AppUser user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
 
-            bool result = user != null;
-            if (user == null)
-            {
-                user = await _userManager.FindByEmailAsync(payload.Email);
-
-                user = new()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Email = payload.Email,
-                    UserName = payload.Email,
-                    nameSurname = payload.Name
-
-                };
-
-                var identityResult = await _userManager.CreateAsync(user);
-                result = identityResult.Succeeded;
-            }
-
-            if (result)
-            {
-                await _userManager.AddLoginAsync(user, info);
-            }
-            else
-            {
-                throw new Exception("Invalid external authentication.");
-
-            }
-
-            Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime);
-            return token;
+            return await CreateUserExternalAsync(user, payload.Email, payload.Name, info, accessTokenLifeTime);
         }
 
         public Task LoginAsync()
