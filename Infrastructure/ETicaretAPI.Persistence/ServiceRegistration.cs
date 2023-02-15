@@ -48,7 +48,6 @@ namespace ETicaretAPI.Persistence
             services.AddScoped<IInternalAuthentication, AuthService>();
 
 
-            
 
         }
     }

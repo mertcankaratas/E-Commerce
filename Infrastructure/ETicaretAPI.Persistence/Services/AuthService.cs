@@ -30,12 +30,13 @@ namespace ETicaretAPI.Persistence.Services
         readonly ITokenHandler _tokenHandler;
 
         readonly SignInManager<Domain.Entities.Identity.AppUser> _signInManager;
-        public AuthService(IHttpClientFactory httpClientFactory, IConfiguration configuration, UserManager<Domain.Entities.Identity.AppUser> userManager, ITokenHandler tokenHandler)
+        public AuthService(IHttpClientFactory httpClientFactory, IConfiguration configuration, UserManager<Domain.Entities.Identity.AppUser> userManager, ITokenHandler tokenHandler, SignInManager<AppUser> signInManager)
         {
             _httpClient = httpClientFactory.CreateClient();
             _configuration = configuration;
             _userManager = userManager;
             _tokenHandler = tokenHandler;
+            _signInManager = signInManager;
         }
 
         async Task<Token> CreateUserExternalAsync(AppUser user,string email,string name,UserLoginInfo info, int accessTokenLifeTime)

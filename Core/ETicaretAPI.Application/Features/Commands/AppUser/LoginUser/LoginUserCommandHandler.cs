@@ -16,6 +16,11 @@ namespace ETicaretAPI.Application.Features.Commands.AppUser.LoginUser
     {
         readonly IAuthService _authService;
 
+        public LoginUserCommandHandler(IAuthService authService)
+        {
+            _authService = authService;
+        }
+
         public async Task<LoginUserCommandResponse> Handle(LoginUserCommandRequest request, CancellationToken cancellationToken)
         {
             var token = await _authService.LoginAsync(request.UserNameOrEmail, request.Password, 15);
