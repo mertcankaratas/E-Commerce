@@ -30,13 +30,16 @@ namespace ETicaretAPI.Persistence.Services
         readonly ITokenHandler _tokenHandler;
 
         readonly SignInManager<Domain.Entities.Identity.AppUser> _signInManager;
-        public AuthService(IHttpClientFactory httpClientFactory, IConfiguration configuration, UserManager<Domain.Entities.Identity.AppUser> userManager, ITokenHandler tokenHandler, SignInManager<AppUser> signInManager)
+
+        readonly IUserService _userService;
+        public AuthService(IHttpClientFactory httpClientFactory, IConfiguration configuration, UserManager<Domain.Entities.Identity.AppUser> userManager, ITokenHandler tokenHandler, SignInManager<AppUser> signInManager, IUserService userService)
         {
             _httpClient = httpClientFactory.CreateClient();
             _configuration = configuration;
             _userManager = userManager;
             _tokenHandler = tokenHandler;
             _signInManager = signInManager;
+            _userService = userService;
         }
 
         async Task<Token> CreateUserExternalAsync(AppUser user,string email,string name,UserLoginInfo info, int accessTokenLifeTime)
@@ -64,6 +67,7 @@ namespace ETicaretAPI.Persistence.Services
                 await _userManager.AddLoginAsync(user, info); //AspNetUserLogins
 
                 Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime);
+                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 15);
                 return token;
 
             }
@@ -127,6 +131,7 @@ namespace ETicaretAPI.Persistence.Services
             if (result.Succeeded)//Authentication başarılı !
             {
                 Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime);
+                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 15);
                 return token;
                 
             }
