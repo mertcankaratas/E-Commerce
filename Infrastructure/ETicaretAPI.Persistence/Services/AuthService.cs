@@ -138,5 +138,20 @@ namespace ETicaretAPI.Persistence.Services
 
             throw new AuthenticationErrorException();
         }
+
+        public async Task<Token> RefreshTokenLoginAsync(string refreshToken)
+        {
+          AppUser? user = _userManager.Users.FirstOrDefault(u => u.RefreshToken == refreshToken);
+
+            if (user != null && user?.RefreshTokenEndDate > DateTime.UtcNow)
+            {
+                Token token = _tokenHandler.CreateAccessToken(15);
+                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 15);
+                return token;
+            }
+            else
+                throw new NotFoundUserException();
+
+        }
     }
 }
