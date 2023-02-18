@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using ETicaretAPI.Application.Abstraction.Services;
+using ETicaretAPI.Application.DTOs;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +11,21 @@ namespace ETicaretAPI.Application.Features.Commands.AppUser.RefreshTokenLogin
 {
     public class RefreshTokenLoginCommandHandler : IRequestHandler<RefreshTokenLoginCommandRequest, RefreshTokenLoginCommandResponse>
     {
-        public Task<RefreshTokenLoginCommandResponse> Handle(RefreshTokenLoginCommandRequest request, CancellationToken cancellationToken)
+
+        readonly IAuthService _authService;
+
+        public RefreshTokenLoginCommandHandler(IAuthService authService)
         {
-            throw new NotImplementedException();
+            _authService = authService;
+        }
+
+        public async Task<RefreshTokenLoginCommandResponse> Handle(RefreshTokenLoginCommandRequest request, CancellationToken cancellationToken)
+        {
+            Token token = await _authService.RefreshTokenLoginAsync(request.RefreshToken);
+            return new()
+            {
+                Token =token
+            };
         }
     }
 }
