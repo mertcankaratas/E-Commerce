@@ -34,7 +34,7 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
 Logger log = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.File("logs/log.txt")
-    .WriteTo.PostgreSQL(builder.Configuration.GetConnectionString("PostgreSQL"),"logs",needAutoCreateTable:true,columnOptions: new Dictionary<string, ColumnWriterBase>
+    .WriteTo.PostgreSQL(builder.Configuration.GetConnectionString("PostgreSQL"), "logs", needAutoCreateTable: true, columnOptions: new Dictionary<string, ColumnWriterBase>
     {
         {"message", new RenderedMessageColumnWriter() },
         {"message_template",new MessageTemplateColumnWriter() },
@@ -44,6 +44,7 @@ Logger log = new LoggerConfiguration()
         {"log_event",new LogEventSerializedColumnWriter() },
         {"user_name",new UserNameColumnWriter() }
     })
+    .WriteTo.Seq(builder.Configuration["Seq:ServerURL"])
     .Enrich.FromLogContext()
     .MinimumLevel.Information()
     .CreateLogger();
