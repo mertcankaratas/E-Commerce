@@ -7,6 +7,7 @@ using ETicaretAPI.Infrastructure.Filters;
 using ETicaretAPI.Infrastructure.Services.Storage.Azure;
 using ETicaretAPI.Infrastructure.Services.Storage.Local;
 using ETicaretAPI.Persistence;
+using ETicaretAPI.SignalR;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpLogging;
@@ -26,6 +27,7 @@ builder.Services.AddPersistenceServices();
 builder.Services.AddInfrastructeServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddStorage<AzureStorage>();
+builder.Services.AddSignalRServices();
 //builder.Services.AddStorage<LocalStorage>();
 
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
