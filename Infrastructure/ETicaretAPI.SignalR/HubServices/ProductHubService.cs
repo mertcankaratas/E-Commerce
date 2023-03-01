@@ -1,4 +1,6 @@
 ﻿using ETicaretAPI.Application.Abstraction.Hubs;
+using ETicaretAPI.SignalR.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +11,17 @@ namespace ETicaretAPI.SignalR.HubServices
 {
     public class ProductHubService : IProductHubService
     {
-        public Task ProductAddedMessageAsync(string message)
+
+        readonly IHubContext<ProductHub> _hubContext;
+
+        public ProductHubService(IHubContext<ProductHub> hubContext)
         {
-            throw new NotImplementedException();
+            _hubContext = hubContext;
+        }
+
+        public async Task ProductAddedMessageAsync(string message)
+        {
+            await _hubContext.Clients.All.SendAsync(RecieveFunctionNames.ProductAddedMessage, message);
         }
     }
 }
