@@ -26,9 +26,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddPersistenceServices();
 builder.Services.AddInfrastructeServices();
 builder.Services.AddApplicationServices();
-builder.Services.AddStorage<AzureStorage>();
+//builder.Services.AddStorage<AzureStorage>();
 builder.Services.AddSignalRServices();
-//builder.Services.AddStorage<LocalStorage>();
+builder.Services.AddStorage<LocalStorage>();
 
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
     policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials()
