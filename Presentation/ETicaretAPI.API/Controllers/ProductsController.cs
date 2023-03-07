@@ -78,6 +78,7 @@ namespace ETicaretAPI.API.Controllers
             
             return Ok();
         }
+        
         [HttpPost("[action]")]
         public async Task<IActionResult> Upload([FromQuery] UploadProductImageCommandRequest uploadProductImageCommandRequest)
         {

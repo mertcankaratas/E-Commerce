@@ -40,7 +40,8 @@ namespace ETicaretAPI.Application.Features.Queries.Product.GetAllProduct
             return new()
             {
                 Products = products,
-                TotalCount = totalCount,
+                TotalProductCount = totalCount
+
             };
         }
     }
