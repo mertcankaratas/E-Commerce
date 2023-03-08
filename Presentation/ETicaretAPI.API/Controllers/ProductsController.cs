@@ -18,6 +18,7 @@ using ETicaretAPI.Application.Features.Commands.ProductImageFile.UploadProductIm
 using ETicaretAPI.Application.Features.Commands.ProductImageFile.RemoveProductImage;
 using ETicaretAPI.Application.Features.Queries.ProductImageFile;
 using Microsoft.AspNetCore.Authorization;
+using ETicaretAPI.Application.Features.Commands.ProductImageFile.ChangeShowcaseImage;
 
 namespace ETicaretAPI.API.Controllers
 {
@@ -106,6 +107,15 @@ namespace ETicaretAPI.API.Controllers
             RemoveProductImageCommandResponse response = await _mediator.Send(removeProductImageCommandRequest);
             return Ok();
 
+        }
+
+
+        [HttpPut("[action]/{imageID}/{productId}")]
+        [Authorize(AuthenticationSchemes="Admin")]
+        public async Task <IActionResult> ChangeShowCaseImage([FromQuery] ChangeShowcaseImageCommandRequest changeShowcaseImageCommandRequest)
+        {
+            ChangeShowcaseImageCommandResponse response = await _mediator.Send(changeShowcaseImageCommandRequest);
+            return Ok(response);
         }
 
 
