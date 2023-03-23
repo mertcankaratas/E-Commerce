@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using ETicaretAPI.Application.Abstraction.Services;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +8,27 @@ using System.Threading.Tasks;
 
 namespace ETicaretAPI.Application.Features.Queries.Basket.GetBasketItems
 {
-    public class GetBasketItemsQueryHandler : IRequestHandler<GetBasketItemsQueryRequest, GetBasketItemsQueryResponse>
+    public class GetBasketItemsQueryHandler : IRequestHandler<GetBasketItemsQueryRequest, List<GetBasketItemsQueryResponse>>
     {
-        public Task<GetBasketItemsQueryResponse> Handle(GetBasketItemsQueryRequest request, CancellationToken cancellationToken)
+        readonly IBasketService _basketService;
+
+        public GetBasketItemsQueryHandler(IBasketService basketService)
         {
-            throw new NotImplementedException();
+            _basketService = basketService;
+        }
+
+        public async Task<List<GetBasketItemsQueryResponse>> Handle(GetBasketItemsQueryRequest request, CancellationToken cancellationToken)
+        {
+            var basketItems = await _basketService.GetBasketItemsAsync();
+
+            return basketItems.Select(ba => new GetBasketItemsQueryResponse
+            {
+                BasketItemId = ba.Id.ToString(),
+                Name = ba.Product.Name,
+                Price=ba.Product.Price,
+                Quantity = ba.Quantity
+
+            }).ToList();
         }
     }
 }

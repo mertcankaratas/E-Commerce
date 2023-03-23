@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ETicaretAPI.Application.Features.Queries.Basket.GetBasketItems
 {
-    public class GetBasketItemsQueryRequest:IRequest<GetBasketItemsQueryResponse>
+    public class GetBasketItemsQueryRequest:IRequest<List<GetBasketItemsQueryResponse>>
     {
     }
 }
