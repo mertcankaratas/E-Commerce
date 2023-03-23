@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using ETicaretAPI.Application.Abstraction.Services;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,22 @@ namespace ETicaretAPI.Application.Features.Commands.Basket.UpdateQuantity
 {
     public class UpdateQuantityCommandHandler : IRequestHandler<UpdateQuantityCommandRequest, UpdateQuantityCommandResponse>
     {
-        public Task<UpdateQuantityCommandResponse> Handle(UpdateQuantityCommandRequest request, CancellationToken cancellationToken)
+        readonly IBasketService _basketService;
+
+        public UpdateQuantityCommandHandler(IBasketService basketService)
         {
-            throw new NotImplementedException();
+            _basketService = basketService;
+        }
+
+        public async Task<UpdateQuantityCommandResponse> Handle(UpdateQuantityCommandRequest request, CancellationToken cancellationToken)
+        {
+           await _basketService.UpdateQuantityAsync(new()
+            {
+                BasketItemId = request.BasketItemId,
+                Quantity = request.Quantity
+            });
+
+            return new();
         }
     }
 }
