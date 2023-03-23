@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using ETicaretAPI.Application.Abstraction.Services;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,18 @@ namespace ETicaretAPI.Application.Features.Commands.Basket.RemoveBasketItem
 {
     public class RemoveBasketItemCommandHandler : IRequestHandler<RemoveBasketItemCommandRequest, RemoveBasketItemCommandResponse>
     {
-        public Task<RemoveBasketItemCommandResponse> Handle(RemoveBasketItemCommandRequest request, CancellationToken cancellationToken)
+        readonly IBasketService _basketService;
+
+        public RemoveBasketItemCommandHandler(IBasketService basketService)
         {
-            throw new NotImplementedException();
+            _basketService = basketService;
+        }
+
+        public async Task<RemoveBasketItemCommandResponse> Handle(RemoveBasketItemCommandRequest request, CancellationToken cancellationToken)
+        {
+           await _basketService.RemoveBasketItemsAsync(request.BasketItemId);
+
+            return new();
         }
     }
 }
