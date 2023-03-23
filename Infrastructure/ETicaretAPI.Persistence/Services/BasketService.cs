@@ -98,7 +98,7 @@ namespace ETicaretAPI.Persistence.Services
             }
         }
 
-        public async Task<List<BasketItem>> GetBasketItemAsync()
+        public async Task<List<BasketItem>> GetBasketItemsAsync()
         {
             Basket? basket = await ContextUser();
             Basket? result= await _basketReadRepository.Table
