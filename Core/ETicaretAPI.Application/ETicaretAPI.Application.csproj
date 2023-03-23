@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <Folder Include="Features\Commands\Basket\UpdateQuantity\" />
-    <Folder Include="Features\Commands\Basket\RemoveBasketItem\" />
     <Folder Include="Features\Queries\Basket\GetBasketItems\" />
   </ItemGroup>
 
